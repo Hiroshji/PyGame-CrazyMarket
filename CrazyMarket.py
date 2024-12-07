@@ -44,6 +44,13 @@ class Item(pygame.sprite.Sprite):
             else:
                 self.rect.y += 5  # Fall if outside the conveyor belt
 
+            # Game Over condition for unscanned items
+            if self.rect.x > SCREEN_WIDTH and not self.scanned:
+                global running
+                running = False
+                print("Game Over: Unscanned item reached the end!")
+            
+            # Scoring for scanned items
             if self.rect.x > SCREEN_WIDTH and self.scanned and not self.scored:
                 global score
                 score += 1
@@ -58,6 +65,7 @@ score = 0
 font = pygame.font.Font(None, 36)
 grabbing_item = None  # Track the currently grabbed item
 spawn_timer = 0  # Timer for spawning items
+running = True
 
 def spawn_item():
     """Spawns an item at the left side of the conveyor belt."""
@@ -66,7 +74,6 @@ def spawn_item():
     items.add(item)
 
 # Main game loop
-running = True
 while running:
     screen.fill(WHITE)
 
@@ -122,5 +129,14 @@ while running:
     # Update display
     pygame.display.flip()
     clock.tick(FPS)
+
+# Game Over screen
+screen.fill(WHITE)
+game_over_text = font.render("Game Over", True, RED)
+final_score_text = font.render(f"Final Score: {score}", True, BLACK)
+screen.blit(game_over_text, (SCREEN_WIDTH // 2 - 50, SCREEN_HEIGHT // 2 - 30))
+screen.blit(final_score_text, (SCREEN_WIDTH // 2 - 70, SCREEN_HEIGHT // 2 + 10))
+pygame.display.flip()
+pygame.time.wait(3000)
 
 pygame.quit()
