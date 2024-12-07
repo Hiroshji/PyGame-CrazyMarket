@@ -53,16 +53,17 @@ class Item(pygame.sprite.Sprite):
 all_sprites = pygame.sprite.Group()
 items = pygame.sprite.Group()
 
-# Spawn items on the conveyor belt
-for i in range(5):
-    item = Item(random.randint(-100, SCREEN_WIDTH - 50), CONVEYOR_Y)
-    all_sprites.add(item)
-    items.add(item)
-
 # Game variables
 score = 0
 font = pygame.font.Font(None, 36)
 grabbing_item = None  # Track the currently grabbed item
+spawn_timer = 0  # Timer for spawning items
+
+def spawn_item():
+    """Spawns an item at the left side of the conveyor belt."""
+    item = Item(-40, random.randint(CONVEYOR_Y, CONVEYOR_Y + CONVEYOR_HEIGHT - 40))
+    all_sprites.add(item)
+    items.add(item)
 
 # Main game loop
 running = True
@@ -94,6 +95,12 @@ while running:
         if SCANNER_AREA.colliderect(grabbing_item.rect) and not grabbing_item.scanned:
             grabbing_item.scanned = True
             print("Item scanned!")
+
+    # Spawn new items at random intervals
+    spawn_timer += 1
+    if spawn_timer > random.randint(60, 120):  # Spawn every 1-2 seconds
+        spawn_item()
+        spawn_timer = 0
 
     # Draw the conveyor belt
     conveyor_belt = pygame.Rect(0, CONVEYOR_Y, SCREEN_WIDTH, CONVEYOR_HEIGHT)
